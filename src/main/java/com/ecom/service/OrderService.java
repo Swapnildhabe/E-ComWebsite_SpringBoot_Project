@@ -2,7 +2,7 @@ package com.ecom.service;
 
 import java.util.List;
 
-import org.hibernate.query.Page;
+import org.springframework.data.domain.Page;
 
 import com.ecom.model.OrderRequest;
 import com.ecom.model.ProductOrder;
@@ -19,6 +19,6 @@ public interface OrderService {
 
 	public ProductOrder getOrdersByOrderId(String orderId);
 
-	public org.springframework.data.domain.Page<ProductOrder> getAllOrdersPagination(Integer pageNo, Integer pageSize);
+	public Page<ProductOrder> getAllOrdersPagination(Integer pageNo, Integer pageSize);
 
 }

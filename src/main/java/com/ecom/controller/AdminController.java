@@ -91,13 +91,24 @@ public class AdminController {
 	}
 	
 	@GetMapping("/category")
-	public String category(Model m) 
-	{		
-		m.addAttribute("categorys", categoryService.getAllCategory());
-		
-		
-		return "/admin/category";
+	public String category(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+		// m.addAttribute("categorys", categoryService.getAllCategory());
+		Page<Category> page = categoryService.getAllCategorPagination(pageNo, pageSize);
+		List<Category> categorys = page.getContent();
+		m.addAttribute("categorys", categorys);
+
+		m.addAttribute("pageNo", page.getNumber());
+		m.addAttribute("pageSize", pageSize);
+		m.addAttribute("totalElements", page.getTotalElements());
+		m.addAttribute("totalPages", page.getTotalPages());
+		m.addAttribute("isFirst", page.isFirst());
+		m.addAttribute("isLast", page.isLast());
+
+		return "admin/category";
 	}
+	
+	
 	@PostMapping("/saveCategory")
 	public String saveCategory(@ModelAttribute Category category,@RequestParam("file") MultipartFile file, HttpSession session) throws IOException {
 		String imageName = file != null ? file.getOriginalFilename() : "default.png";
@@ -208,16 +219,33 @@ public class AdminController {
 	}
 	
 	@GetMapping("/products")
-	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch) {
-		List<Product> Products =null;
-		
-		if(ch!=null && ch.length()>0) {
-			Products = productService.searchProduct(ch);
-		}else {
-			Products = productService.getAllProducts();
+	public String loadViewProduct(Model m, @RequestParam(defaultValue = "") String ch,
+			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
+
+//		List<Product> products = null;
+//		if (ch != null && ch.length() > 0) {
+//			products = productService.searchProduct(ch);
+//		} else {
+//			products = productService.getAllProducts();
+//		}
+//		m.addAttribute("products", products);
+
+		Page<Product> page = null;
+		if (ch != null && ch.length() > 0) {
+			page = productService.searchProductPagination(pageNo, pageSize, ch);
+		} else {
+			page = productService.getAllProductsPagination(pageNo, pageSize);
 		}
-		m.addAttribute("products" ,Products);
-		
+		m.addAttribute("products", page.getContent());
+
+		m.addAttribute("pageNo", page.getNumber());
+		m.addAttribute("pageSize", pageSize);
+		m.addAttribute("totalElements", page.getTotalElements());
+		m.addAttribute("totalPages", page.getTotalPages());
+		m.addAttribute("isFirst", page.isFirst());
+		m.addAttribute("isLast", page.isLast());
+
 		return "admin/products";
 	}
 	
@@ -281,7 +309,7 @@ public class AdminController {
 			session.setAttribute("errorMsg","Something Wrong On Server ");
 		}
 		return "redirect:/admin/users";
-	}
+	} 
 	
 	@GetMapping("/orders")
 	public String getAllOrders(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,

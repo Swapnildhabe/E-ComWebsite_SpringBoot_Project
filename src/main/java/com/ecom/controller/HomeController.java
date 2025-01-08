@@ -13,6 +13,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.data.domain.Page;
+
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +40,7 @@ import com.ecom.service.UserService;
 
 import com.ecom.util.CommonUtil;
 
+import io.micrometer.common.util.StringUtils;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -91,14 +94,36 @@ public class HomeController {
 	public String register() {
 		return "register";
 	}
-
 	@GetMapping("/products")
-	public String products(Model m, @RequestParam(value = "category", defaultValue = "") String category) {
+	public String products(Model m, @RequestParam(value = "category", defaultValue = "") String category,
+			@RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
+			@RequestParam(name = "pageSize", defaultValue = "12") Integer pageSize,
+			@RequestParam(defaultValue = "") String ch) {
+
 		List<Category> categories = categoryService.getAllActiveCategory();
-		List<Product> products = productService.getAllActiveProducts(category);
-		m.addAttribute("categories", categories);
-		m.addAttribute("products", products);
 		m.addAttribute("paramValue", category);
+		m.addAttribute("categories", categories);
+
+//		List<Product> products = productService.getAllActiveProducts(category);
+//		m.addAttribute("products", products);
+		Page<Product> page = null;
+		if (StringUtils.isEmpty(ch)) {
+			page = productService.getAllActiveProductPagination(pageNo, pageSize, category);
+		} else {
+			page = productService.searchActiveProductPagination(pageNo, pageSize, category, ch);
+		}
+
+		List<Product> products = page.getContent();
+		m.addAttribute("products", products);
+		m.addAttribute("productsSize", products.size());
+
+		m.addAttribute("pageNo", page.getNumber());
+		m.addAttribute("pageSize", pageSize);
+		m.addAttribute("totalElements", page.getTotalElements());
+		m.addAttribute("totalPages", page.getTotalPages());
+		m.addAttribute("isFirst", page.isFirst());
+		m.addAttribute("isLast", page.isLast());
+
 		return "product";
 	}
 
