@@ -10,7 +10,7 @@ public class Category {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private int id;
+	private Integer id;
 	
 	private String name;
 	
@@ -18,11 +18,11 @@ public class Category {
 	
 	private Boolean isActive;
 
-	public int getId() {
+	public Integer getId() {
 		return id;
 	}
 
-	public void setId(int id) {
+	public void setId(Integer id) {
 		this.id = id;
 	}
 
@@ -50,7 +50,7 @@ public class Category {
 		this.isActive = isActive;
 	}
 
-	public Category(int id, String name, String imageName, Boolean isActive) {
+	public Category(Integer id, String name, String imageName, Boolean isActive) {
 		super();
 		this.id = id;
 		this.name = name;
