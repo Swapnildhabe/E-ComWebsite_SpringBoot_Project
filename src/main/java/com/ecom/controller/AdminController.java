@@ -311,9 +311,6 @@ public class AdminController {
 	@GetMapping("/orders")
 	public String getAllOrders(Model m, @RequestParam(name = "pageNo", defaultValue = "0") Integer pageNo,
 			@RequestParam(name = "pageSize", defaultValue = "10") Integer pageSize) {
-//		List<ProductOrder> allOrders = orderService.getAllOrders();
-//		m.addAttribute("orders", allOrders);
-//		m.addAttribute("srch", false);
 
 		Page<ProductOrder> page = orderService.getAllOrdersPagination(pageNo, pageSize);
 		m.addAttribute("orders", page.getContent());
